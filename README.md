@@ -1,8 +1,8 @@
 # Hyperledger Fabric REST Integration
 
 ## Description:-
-<p>This artifact provides a mechanism to invoke and query fabric chaincode using a REST-based API interface.</br>
-Additionally, it can also invoke chaincode using a asynchronous method and can publish chaincode events to Kafka/Event-Hub topics.</p>
+<p>This artifact provides a mechanism to invoke and query fabric chaincode using a REST-based API interface.<br>
+Additionally, it can also invoke chaincode using an asynchronous method and can publish chaincode events to Kafka/Event-Hub topics.</p>
 
 ## Key Feature:-</br>
 1. Invoke Chaincode with REST.</br>
@@ -20,21 +20,31 @@ Additionally, it can also invoke chaincode using a asynchronous method and can p
 
 ## Running Locally:-</br>
 1. Download/Clone the repository and build the project using ``mvn clean install``
-2. Create a folder <i>wallet</i> in the root directory of the project.</br>
-3. If using [fabric-getting-started](https://github.com/anandbanik/fabric-getting-started) script, note the path to CA Pem file for Org1.</br> Usually located in ``fabric-getting-started/test-network/organizations/peerOrganizations/org1.example.com/ca`` folder.
-4. Open [EnrollAdmin.java](https://github.com/blockchain-wmt/hlf-connector/blob/main/src/test/java/hlf/java/rest/client/util/EnrollAdmin.java) and set the ``pemFilePath`` variable with value noted above and run. This will create ``admin.id`` in the <i> wallet </i> folder.
-5. Open [RegisterUser](https://github.com/blockchain-wmt/hlf-connector/blob/main/src/test/java/hlf/java/rest/client/util/RegisterUser.java) and set the ``pemFilePath`` variable with value noted above and run. This will create ``clientUser.id`` in the <i> wallet </i> folder.
-2. Add the ``connection-org1.yaml`` file, located at ``fabric-getting-started/test-network/organizations/peerOrganizations/org1.example.com`` to the wallet folder.</br>
-3. Make sure the Peer URL and CA URL in ``connection-org1.yaml`` are reachable.</br> If using [fabric-getting-started](https://github.com/anandbanik/fabric-getting-started), change the peer URL in ``connection-org1.yaml`` to ``peer0.org1.example.com:7051`` and CA URL to ``ca-org1:7054``.
-4. Run, <i>hlf.java.rest.client.FabricClientBootstrap</i> java file or jar file.
-5. You can also run as container using ``docker-compose up``.</br> If the fabric network is running local, make sure the docker-compose.yml file is configured to use the correct network.</br>
-```
-networks:
-  default:
+2. Create a folder named ***wallet*** in the root directory of the project.</br>
+3. Add the ``connection-org1.yaml`` file, Usually located at ``test-network/organizations/peerOrganizations/org1.example.com`` if using the test network from [fabric-samples](https://github.com/hyperledger/fabric-samples) to the wallet folder.</br>
+4. Create the ``admin.id`` and ``clientUser.id`` files in the ***wallet*** folder. Paste the code below in the file and update the ***certificates*** and the ***private key*** from the test network.</br> Usually located in ``organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp`` </br> You can use this command to extract the certificate and key from the file: ``awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' filename``
+   ```
+   {
+       "credentials":
+       {
+          "certificate":"",
+          "privateKey":""
+       },
+       "type":"X.509",
+       "version":1,
+       "mspId":"Org1MSP"
+   }
+   ```
+5. Update the ***wallet***, ***orgConnectionConfig*** and ***server config*** path to your ***absolute path*** in the ``application.yml`` file present in ``src/main/resources``.
+6. Make sure the Peer URL and CA URL in ``connection-org1.yaml`` are reachable.</br>
+7. Run, <i>hlf.java.rest.client.FabricClientBootstrap</i> java file or jar file.
+8. You can also run as container using ``docker-compose up``.</br> If the fabric network is running local, make sure the docker-compose.yml file is configured to use the correct network.</br>
+    ```
+    networks:
+    default:
     external:
       name: <fabric's network>
-```
-
+    ```
 ## Event-driven Design
 
 ### Asynchronous Integration to invoke chaincode
@@ -71,7 +81,7 @@ Please find below the keys for the headers:-
 ```
 
 ### Capture Chaincode events:-
-This component supports capturing chaincode events and publish it to Kafka or Azure EventHub. This can be useful for integrating with offchain DB.
+This component supports capturing chaincode events and publish it to Kafka or Azure EventHub. This can be useful for integrating with off-chain DB.
 To configure it, use the below configuration in the application.yml file.
 ```
 fabric:
@@ -103,7 +113,7 @@ The component will send the same JSON payload sent by the chaincode and add the 
 ```
 
 ### Capture Block events:-
-This component supports capturing block events and publish it to Kafka or Azure EventHub. This can be useful for integrating with offchain DB where adding events to chaincode is not possible (for ex - Food-Trust anchor channel).
+This component supports capturing block events and publish it to Kafka or Azure EventHub. This can be useful for integrating with off-chain DB where adding events to chaincode is not possible (for ex - Food-Trust anchor channel).
 To configure it, use the below configuration in the application.yml file.
 ```
 fabric:
