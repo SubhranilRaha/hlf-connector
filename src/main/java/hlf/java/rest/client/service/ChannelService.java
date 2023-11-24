@@ -31,4 +31,12 @@ public interface ChannelService {
    * @return
    */
   Set<String> getChannelMembersMSPID(String channelName);
+
+  /**
+   * lists committed chaincodes in a channel
+   *
+   * @param channelName
+   * @return
+   */
+  Set<String> getCommittedChaincodes(String channelName);
 }

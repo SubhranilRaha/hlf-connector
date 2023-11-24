@@ -11,12 +11,9 @@ import hlf.java.rest.client.model.ClientResponseModel;
 import hlf.java.rest.client.service.ChannelService;
 import hlf.java.rest.client.service.HFClientWrapper;
 import hlf.java.rest.client.util.FabricClientConstants;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -27,6 +24,7 @@ import org.hyperledger.fabric.protos.common.Configtx;
 import org.hyperledger.fabric.protos.common.Configuration;
 import org.hyperledger.fabric.protos.common.Policies;
 import org.hyperledger.fabric.protos.msp.MspConfigPackage;
+import org.hyperledger.fabric.protos.peer.Query;
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.ChannelConfiguration;
 import org.hyperledger.fabric.sdk.Orderer;
@@ -173,7 +171,27 @@ public class ChannelServiceImpl implements ChannelService {
       throw new ChannelOperationException(ErrorCode.CHANNEL_NOT_FOUND);
     }
   }
-
+  @Override
+  public Set<String> getCommittedChaincodes(String channelName) {
+    if (StringUtils.isBlank(channelName)) {
+      throw new ChannelOperationException(ErrorCode.CHANNEL_NAME_MISSING);  }
+    Network network = gateway.getNetwork(channelName);
+    Channel channel = network.getChannel();
+    try {
+      Set<String> committedChaincodes = new HashSet<>();
+      Collection<Peer> peers = channel.getPeers();
+      for (Peer peer : peers) {
+        Collection<Query.ChaincodeInfo> chaincodeInfos = channel.queryInstantiatedChaincodes(peer);
+        for (Query.ChaincodeInfo chaincodeInfo : chaincodeInfos)
+        {
+          committedChaincodes.add(chaincodeInfo.getName());
+        }
+      }
+      return committedChaincodes;  } catch (Exception e)
+    {
+      throw new ChannelOperationException(ErrorCode.CHANNEL_NOT_FOUND);
+    }
+  }
   /**
    * create new channel configuration
    *

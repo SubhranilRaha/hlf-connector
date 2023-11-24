@@ -44,4 +44,10 @@ public class ChannelOperationController {
       @RequestParam("channel_name") String channelName) {
     return new ResponseEntity<>(channelService.getChannelMembersMSPID(channelName), HttpStatus.OK);
   }
+
+  @GetMapping("/commited-chaincodes")
+  public ResponseEntity<Set<String>> getCommitedChaincodes(
+          @RequestParam("channel_name") String channelName) {
+    return new ResponseEntity<>(channelService.getCommittedChaincodes(channelName), HttpStatus.OK);
+  }
 }
